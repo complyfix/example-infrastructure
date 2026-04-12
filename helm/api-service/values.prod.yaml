@@ -1,0 +1,43 @@
+# Production overrides for api-service
+# Applied via: helm upgrade --values values.yaml --values values.prod.yaml
+
+replicaCount: 3
+
+image:
+  tag: "v2.1.0-rc3"
+  pullPolicy: IfNotPresent    # VIOLATION: should be Always for prod
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 15
+  targetCPUUtilizationPercentage: 60
+
+# Still no resource limits in prod — risky
+resources: {}
+
+# Still no probes in prod — risky
+livenessProbe: {}
+readinessProbe: {}
+
+# Network policy still disabled in prod
+networkPolicy:
+  enabled: false
+
+env:
+  - name: APP_ENV
+    value: "production"
+  - name: LOG_LEVEL
+    value: "warn"
+  - name: ENABLE_METRICS
+    value: "true"
+  - name: DB_HOST
+    valueFrom:
+      secretKeyRef:
+        name: api-service-db-prod
+        key: host
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: api-service-db-prod
+        key: password

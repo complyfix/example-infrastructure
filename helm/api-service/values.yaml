@@ -1,0 +1,105 @@
+# Default values for api-service
+# This is a YAML-formatted file.
+
+replicaCount: 2
+
+image:
+  repository: 123456789.dkr.ecr.us-east-1.amazonaws.com/acme-platform/api-service
+  tag: "latest"
+  pullPolicy: IfNotPresent    # VIOLATION: should be Always (CKV_K8S_15)
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "api-service"
+
+# VIOLATION: No pod security context (CKV_K8S_6, CKV_K8S_20, CKV_K8S_22)
+# Missing: runAsNonRoot, readOnlyRootFilesystem, allowPrivilegeEscalation
+podSecurityContext: {}
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # fsGroup: 1000
+
+securityContext: {}
+  # readOnlyRootFilesystem: true
+  # allowPrivilegeEscalation: false
+  # capabilities:
+  #   drop:
+  #     - ALL
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+  hosts:
+    - host: api.acme-saas.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: api-tls
+      hosts:
+        - api.acme-saas.com
+
+# VIOLATION: No resource limits (CKV_K8S_11, CKV_K8S_12, CKV_K8S_13)
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 250m
+  #   memory: 256Mi
+
+# VIOLATION: No liveness probe (CKV_K8S_8)
+livenessProbe: {}
+  # httpGet:
+  #   path: /healthz
+  #   port: http
+  # initialDelaySeconds: 15
+  # periodSeconds: 10
+
+# VIOLATION: No readiness probe (CKV_K8S_9)
+readinessProbe: {}
+  # httpGet:
+  #   path: /readyz
+  #   port: http
+  # initialDelaySeconds: 5
+  # periodSeconds: 5
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# VIOLATION: No network policy (CKV_K8S_4)
+networkPolicy:
+  enabled: false
+
+env:
+  - name: APP_ENV
+    value: "production"
+  - name: LOG_LEVEL
+    value: "info"
+  - name: DB_HOST
+    valueFrom:
+      secretKeyRef:
+        name: api-service-db
+        key: host
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: api-service-db
+        key: password
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
