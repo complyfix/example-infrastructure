@@ -4,7 +4,7 @@
 replicaCount: 2
 
 image:
-  repository: 123456789.dkr.ecr.us-east-1.amazonaws.com/acme-platform/api-service
+  repository: 123456789012.dkr.ecr.us-east-1.amazonaws.com/acme-platform/api-service
   tag: "latest"
   pullPolicy: IfNotPresent    # VIOLATION: should be Always (CKV_K8S_15)
 
@@ -40,14 +40,14 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/rate-limit: "100"
   hosts:
-    - host: api.acme-saas.com
+    - host: api.example.com
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: api-tls
       hosts:
-        - api.acme-saas.com
+        - api.example.com
 
 # VIOLATION: No resource limits (CKV_K8S_11, CKV_K8S_12, CKV_K8S_13)
 resources: {}

@@ -1,16 +1,28 @@
-# Acme Platform — Infrastructure
+# Example Infrastructure
 
-Production infrastructure for the Acme SaaS Platform. Manages AWS resources via Terraform and Kubernetes workloads via Helm.
+> **Warning**
+> This repository contains intentionally non-compliant infrastructure code for demo purposes. Do not use any patterns from this repo in production.
 
-## Architecture
+Sample Terraform + Helm infrastructure with intentional SOC 2 / HIPAA compliance violations. Used to demo and test [ComplyFix](https://complyfix.io).
 
-- **VPC** with public/private subnets across 3 AZs
-- **EKS** cluster (v1.29) running API and worker services
-- **RDS** PostgreSQL 16 (primary + read replica)
-- **DynamoDB** for session management
-- **S3** buckets for app data, user uploads, logs, backups
-- **Lambda** for async event processing
-- **ALB** for ingress traffic
+## What's Inside
+
+- **Terraform** — VPC, EKS, RDS, S3, IAM, CloudTrail, CloudWatch across 5 modules
+- **Helm** — Kubernetes API service chart with default, staging, and production values
+
+## Expected Scan Output
+
+```
+47 findings across 2 frameworks (SOC 2, HIPAA)
+38 auto-fixable (17 deterministic, 21 template+config)
+Traced across 3 Terraform modules + 1 Helm chart
+```
+
+## Try It
+
+```bash
+complyfix scan github.com/complyfix/example-infrastructure
+```
 
 ## Structure
 
@@ -18,7 +30,7 @@ Production infrastructure for the Acme SaaS Platform. Manages AWS resources via 
 terraform/
   main.tf                   # Root module — calls all child modules
   variables.tf              # Input variables
-  terraform.tfvars          # Default values
+  terraform.tfvars          # Default values (intentionally insecure)
   modules/
     networking/             # VPC, subnets, security groups, ALB
     storage/                # S3 buckets, EBS volumes
@@ -30,28 +42,12 @@ terraform/
 
 helm/
   api-service/              # Main API service Helm chart
-    values.yaml             # Default values
+    values.yaml             # Default values (missing security context, probes, limits)
     values.staging.yaml     # Staging overrides
-    values.prod.yaml        # Production overrides
+    values.prod.yaml        # Production overrides (no network policy)
 ```
 
-## Deployment
+## Learn More
 
-```bash
-# Terraform
-cd terraform
-terraform init
-terraform plan -var-file=terraform.tfvars
-terraform apply
-
-# Helm
-helm upgrade --install api-service ./helm/api-service \
-  --values helm/api-service/values.yaml \
-  --values helm/api-service/values.prod.yaml \
-  --namespace acme --create-namespace
-```
-
-## Team
-
-Platform Engineering — 3 engineers
-Last audit: None (preparing for first SOC 2)
+- [ComplyFix](https://complyfix.io) — IaC compliance remediation for SOC 2 / HIPAA
+- [Install the CLI](https://complyfix.io) — `brew install complyfix/tap/complyfix`
