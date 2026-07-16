@@ -23,7 +23,8 @@ podSecurityContext: {}
   # runAsUser: 1000
   # fsGroup: 1000
 
-securityContext: {}
+securityContext:
+  readOnlyRootFilesystem: true
   # readOnlyRootFilesystem: true
   # allowPrivilegeEscalation: false
   # capabilities:
