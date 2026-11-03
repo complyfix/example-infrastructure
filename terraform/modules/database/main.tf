@@ -67,7 +67,7 @@ resource "aws_db_instance" "primary" {
   parameter_group_name   = aws_db_parameter_group.postgres.name
 
   # VIOLATION: Not encrypted
-  storage_encrypted = false
+  storage_encrypted = true
 
   # VIOLATION: Publicly accessible
   publicly_accessible = true
