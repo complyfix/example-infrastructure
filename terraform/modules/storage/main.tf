@@ -23,6 +23,10 @@ resource "aws_s3_bucket" "app_data" {
     Name    = "${var.project_name}-app-data"
     Purpose = "Application data storage"
   })
+
+  versioning {
+    enabled = true
+  }
 }
 
 # VIOLATION: No server-side encryption configuration
