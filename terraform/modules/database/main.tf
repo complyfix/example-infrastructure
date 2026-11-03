@@ -70,7 +70,7 @@ resource "aws_db_instance" "primary" {
   storage_encrypted = false
 
   # VIOLATION: Publicly accessible
-  publicly_accessible = true
+  publicly_accessible = false
 
   # VIOLATION: No backup retention
   backup_retention_period = 0
