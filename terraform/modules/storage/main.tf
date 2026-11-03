@@ -23,6 +23,14 @@ resource "aws_s3_bucket" "app_data" {
     Name    = "${var.project_name}-app-data"
     Purpose = "Application data storage"
   })
+
+  server_side_encryption_configuration {
+  rule {
+  apply_server_side_encryption_by_default {
+    sse_algorithm = "aws:kms"
+  }
+  }
+  }
 }
 
 # VIOLATION: No server-side encryption configuration
