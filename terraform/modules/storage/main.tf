@@ -45,6 +45,14 @@ resource "aws_s3_bucket" "uploads" {
     Name    = "${var.project_name}-uploads"
     Purpose = "User file uploads"
   })
+
+  server_side_encryption_configuration {
+  rule {
+  apply_server_side_encryption_by_default {
+    sse_algorithm = "aws:kms"
+  }
+  }
+  }
 }
 
 # VIOLATION: Public access not blocked (CKV_AWS_53, CKV_AWS_54, CKV_AWS_55, CKV_AWS_56)
