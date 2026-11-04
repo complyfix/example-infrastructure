@@ -59,7 +59,12 @@ resources: {}
   #   memory: 256Mi
 
 # VIOLATION: No liveness probe (CKV_K8S_8)
-livenessProbe: {}
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 15
+  periodSeconds: 20
   # httpGet:
   #   path: /healthz
   #   port: http
