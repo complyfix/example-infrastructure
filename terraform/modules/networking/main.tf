@@ -23,7 +23,7 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 4, count.index)
   availability_zone       = var.availability_zones[count.index]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = merge(var.tags, {
     Name                     = "${var.project_name}-public-${var.availability_zones[count.index]}"
@@ -138,6 +138,7 @@ resource "aws_security_group" "bastion" {
   }
 
   egress {
+    description = "Egress rule"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -171,6 +172,7 @@ resource "aws_security_group" "alb" {
   }
 
   egress {
+    description = "Egress rule"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -204,6 +206,7 @@ resource "aws_security_group" "eks_nodes" {
   }
 
   egress {
+    description = "Egress rule"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -229,6 +232,7 @@ resource "aws_security_group" "database" {
   }
 
   egress {
+    description = "Egress rule"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
